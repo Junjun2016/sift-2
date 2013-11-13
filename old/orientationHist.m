@@ -27,10 +27,10 @@ function keypoints = orientationHist(grad, ort, kpScale, x, y, zoomLevel)
 	y = round(y);
 
 	% window corners
-	a = round(max(x - radius, 5));
-	b = round(max(y - radius, 5));
-	c = round(min(x + radius, M - 4));
-	d = round(min(y + radius, N - 4));
+	a = round(max(x - radius, 3));
+	b = round(max(y - radius, 3));
+	c = round(min(x + radius, M - 2));
+	d = round(min(y + radius, N - 2));
 
 	% iterate through all points in the window
 	for i = a:c
@@ -40,6 +40,9 @@ function keypoints = orientationHist(grad, ort, kpScale, x, y, zoomLevel)
 			if (distnc < radius && gradVal > 0)				
 				ortAng = ort(i, j);
 				binNo = round(num_bins * (ortAng + pi) / (2 * pi));
+				if (binNo == 0)
+					binNo = num_bins;
+				end
 				w = exp(-1 * distnc * distnc / ( 2 * sig * sig ));	
 				ortHist(binNo) = ortHist(binNo) + w * gradVal;			
 			end

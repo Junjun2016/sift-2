@@ -37,7 +37,11 @@ function [loc, val] = fitQuadratic(I_dog, l, x, y)
 
 	% to get the location of the extremum, we need to solve
 	% S * x = -F. Therefore, x = -inv(S) * F
-	loc = -1 * inv(S) * F;	
+	if (det(S) > 1e-8)
+		loc = -1 * inv(S) * F;
+	else
+		loc = [0; 0; 0];
+	end	
 
 	% the value of the function at the extremum
 	val = B(x, y) + 0.5 * (loc .* F);

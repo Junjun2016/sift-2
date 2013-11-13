@@ -8,14 +8,16 @@
 % Returns
 %	keypoints : keypoint descriptors
 % 	im : The blurred image to be re-sampled at next octave
-function [keypoints, im] = computeKeypoints(I, zoomLevel)
+%	I_blur : stack of blurred images (I_blur)
+%	I_dog : stack of DoG images (I_dog)
+function [keypoints, im, I_blur, I_dog] = computeKeypoints(I, options, zoomLevel)
 
 	% size of image
 	[M N] = size(I);
 
 	% size of an interval
-	intSize = 2;
-	initSigma = 1.6;
+	intSize = options.intSize;
+	initSigma = options.initSigma;
 
 	% compute the sigma multiplier 'k'
 	sigmaMult = 2 ^ (1 / intSize);
@@ -32,8 +34,8 @@ function [keypoints, im] = computeKeypoints(I, zoomLevel)
 	% compute blurred images using incremental blurring
 	prevSigma = initSigma;
 	for i = 2:numBlurs
-		sigmaDiff = prevSigma * sqrt(sigmaMult ^ 2 - 1);
-		I_blur(:, :, i) = gaussianConv(I_blur(:, :, i - 1), sigmaDiff);
+		sigmaDiff = prevSigma * sqrt(sigmaMult ^ 2 - 1);		
+		I_blur(:, :, i) = gaussianConv(I_blur(:, :, i - 1), sigmaDiff);	
 		prevSigma = prevSigma * sigmaMult;
 	end
 
@@ -42,8 +44,10 @@ function [keypoints, im] = computeKeypoints(I, zoomLevel)
 
 	% compute DoGs
 	for i = 1:numDogs
-		I_dog(:, :, i) = I_blur(:, :, i) - I_blur(:, :, i + 1);
+		I_dog(:, :, i) = I_blur(:, :, i + 1) - I_blur(:, :, i);
 	end
 
 	% find extrema in compute DoGs
-	keypoints = findExtrema(I_dog, I_blur, initSigma, intSize, zoomLevel);
+	options.numSpatialBins = 4;
+	options.numOrtBins = 8;
+	keypoints = findExtrema(I_dog, I_blur, zoomLevel, options);

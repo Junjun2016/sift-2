@@ -25,7 +25,7 @@ function matches = computeMatches(list1, list2)
 		end
 
 		% perform threshold check on the distance ratio
-		if (d1 / d2 < 0.75)
+		if (d1 / d2 < 0.8)
 			matches = [matches; list1(i, :), list2(minIdx, :)];
 		end
 

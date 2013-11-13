@@ -15,4 +15,4 @@ function accept = checkEdgeResponse(dog, x, y)
 	tr = trace(H); de = det(H);
 
 	% accept if principal curvatures ratio is less than 10
-	accept = (tr * tr / de) < 12.1;
+	accept = (tr * tr / (de + 1e-12)) < 12.1;

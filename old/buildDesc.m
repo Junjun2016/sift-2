@@ -29,7 +29,7 @@ function desc = buildDesc(grad, ort, kpScale, x, y, ortAng, zoomLevel)
 	histogram = zeros(sampleSize, sampleSize, num_orients);
 
 	% compute radius of the circle	
-	radius = round(( 1.414 * (sampleSize + 1) * (windowWid) ) / 2);
+	radius = round(( sqrt(2) * (sampleSize + 1) * (windowWid) ) / 2);
 	sig = 0.5 * sampleSize;
 
 	% iterate through points that can lie inside the 16x16 region
@@ -114,15 +114,11 @@ function desc = buildDesc(grad, ort, kpScale, x, y, ortAng, zoomLevel)
 
 	% unroll the 3d histogram into a vector
 	desc = reshape(histogram, 1, sampleSize * sampleSize * num_orients);
-	if (norm(desc) ~= 0)		
-		desc = ( 1 / norm(desc) ) * desc; 
-	end
+	desc = ( 1 / norm(desc) ) * desc;
 
 	% limit values in the vector at 0.2
 	desc = min(desc, 0.2);
-	if (norm(desc) ~= 0)		
-		desc = ( 1 / norm(desc) ) * desc;
-	end
+	desc = ( 1 / norm(desc) ) * desc;
 
 	% add the x and y position, scale and orientation
 	desc = [orig_x, orig_y, scl, ortAng, desc];
